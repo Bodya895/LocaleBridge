@@ -58,21 +58,21 @@ int main()
         WSACleanup();
         return 0;
     }
-    cout << "Клієнта підключено." << endl;
-
+    cout << "Клієнта підключено." << endl << endl;
     char buf[4096];
-    int bytesReceived = recv(clientSocket, buf, 4096 - 1, 0);
-    if (bytesReceived > 0) {
-        buf[bytesReceived] = '\0';
-        cout << "Повідомлення від клієнта: " << buf << endl;
-        string response = "Сервер отримав ваше повідомлення. Успіх!";
-        send(clientSocket, response.c_str(), response.size() + 1, 0);
-    }
-    else if (bytesReceived == 0) {
-        cout << "Клієнт відключився" << endl;
-    }
-    else {
-        cout << "Помилка!" << endl;
+    while (true) {
+        int bytesReceived = recv(clientSocket, buf, 4096 - 1, 0);
+        if (bytesReceived > 0) {
+            buf[bytesReceived] = '\0';
+            cout << "Повідомлення від клієнта: " << buf << endl;
+            const char* response = "Сервер отримав ваше повідомлення.";
+            int responseLength = strlen(response);
+            int sendResult = send(clientSocket, response, responseLength, 0);
+        }
+        else if (bytesReceived == 0) {
+            cout << "Клієнт відключився." << endl;
+            break;
+        }
     }
     closesocket(clientSocket);
     cout << "З'єднання закрито." << endl;

@@ -2,7 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-      <FullPath>C:\Users\User\Desktop\LocaleBridge-main\Server\x64\Debug\Server.exe</FullPath>
+      <FullPath>C:\Users\User\Desktop\LocaleBridge-main\Server\Debug\Server.exe</FullPath>
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

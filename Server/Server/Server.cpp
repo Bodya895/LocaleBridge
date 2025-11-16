@@ -130,7 +130,7 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
 
     clientMutex.lock();
 
-    for (auto it = clientSockets.begin(); it != clientSockets.end(); ++it) {
+    for (auto it = clientSockets.begin(); it != clientSockets.end(); it++) {
         if (*it == clientSocket) {
             clientSockets.erase(it);
             break;

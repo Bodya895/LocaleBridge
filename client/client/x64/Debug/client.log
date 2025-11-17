@@ -1,9 +1,0 @@
-<<<<<<< HEAD
-﻿  client.cpp
-D:\mainProg\client\client\client.cpp(60,74): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-  client.vcxproj -> D:\mainProg\client\x64\Debug\client.exe
-=======
-﻿  client.cpp
-D:\mainProg\client\client\client.cpp(53,74): warning C4267: аргумент: преобразование из "size_t" в "int"; возможна потеря данных
-  client.vcxproj -> D:\mainProg\client\x64\Debug\client.exe
->>>>>>> 85433183d77983f7cdb30418441855baa3cb6ff1

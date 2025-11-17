@@ -7,12 +7,14 @@
 #include<vector>
 #include<mutex>
 #include<string>
+#include<map>
 
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
 
 vector<SOCKET> clientSockets;
+map<SOCKET, string> clientNames;
 mutex clientMutex;
 
 DWORD WINAPI ClientHandler(LPVOID lpParam);
@@ -102,7 +104,29 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
         clientIP = "Невідомий клієнт";
     }
 
-    cout << "'" << clientIP << "' Клієнта підключено." << endl;
+    bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
+    string clientName;
+
+    if (bytesReceived > 0) {
+        buf[bytesReceived] = '\0';
+        string nameCandidate(buf);
+        nameCandidate.erase(nameCandidate.find_last_not_of("\n\r\t") + 1);
+
+        clientMutex.lock();
+        clientNames[clientSocket] = nameCandidate;
+        clientName = nameCandidate;
+        clientMutex.unlock();
+
+        cout << "'" << clientIP << "' Клієнта підключено як '" << clientName << "'." << endl;
+    }
+    else {
+        clientMutex.lock();
+        clientSockets.erase(remove(clientSockets.begin(), clientSockets.end(), clientSocket), clientSockets.end());
+        clientMutex.unlock();
+        closesocket(clientSocket);
+        cout << "'" << clientIP << "' Клієнт відключився до надсилання імені." << endl;
+        return 0;
+    }
 
     while (true) {
         bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
@@ -113,7 +137,7 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
 
         buf[bytesReceived] = '\0';
         string receivedMessage = buf;
-        string broadcastMessage = "[" + clientIP + "] : " + receivedMessage;
+        string broadcastMessage = "[" + clientName + "] : " + receivedMessage;
 
         cout << ">> " << broadcastMessage << endl;
 
@@ -137,11 +161,11 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
         }
     }
 
+    clientNames.erase(clientSocket);
     clientMutex.unlock();
-
     closesocket(clientSocket);
 
-    cout << "'" << clientIP << "' Клієнт відключився. З'єднання закрито." << endl;
+    cout << "'" << clientName << "' Клієнт відключився. З'єднання закрито." << endl;
 
     return 0;
 }

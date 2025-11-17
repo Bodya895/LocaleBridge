@@ -23,7 +23,7 @@ DWORD WINAPI ReceiveHandler(LPVOID lpParam) {
 
         
         if (bytesReceived <= 0) {
-            cout << "!!! Ñåðâåð â³äêëþ÷èâñÿ. Íàòèñí³òü Enter äëÿ âèõîäó..." << endl;
+            cout << "Server closed." << endl;
             closesocket(clientSocket);
             break;
         }
@@ -84,7 +84,7 @@ int main()
    
 
     string line;
-    cout << "Ââîäüòå ïîâ³äîìëåííÿ äëÿ â³äïðàâêè. Enter äëÿ â³äïðàâêè." << endl;
+    cout << "Ã‚Ã¢Ã®Ã¤Ã¼Ã²Ã¥ Ã¯Ã®Ã¢Â³Ã¤Ã®Ã¬Ã«Ã¥Ã­Ã­Ã¿ Ã¤Ã«Ã¿ Ã¢Â³Ã¤Ã¯Ã°Ã Ã¢ÃªÃ¨. Enter Ã¤Ã«Ã¿ Ã¢Â³Ã¤Ã¯Ã°Ã Ã¢ÃªÃ¨." << endl;
 
     while (getline(cin, line)) {
         if (line.empty()) {
@@ -99,7 +99,7 @@ int main()
 
         
         if (sendResult == SOCKET_ERROR) {
-            cout << "Ïîìèëêà â³äïðàâêè! Ç'ºäíàííÿ ðîç³ðâàíî." << endl;
+            cout << "ÃÃ®Ã¬Ã¨Ã«ÃªÃ  Ã¢Â³Ã¤Ã¯Ã°Ã Ã¢ÃªÃ¨! Ã‡'ÂºÃ¤Ã­Ã Ã­Ã­Ã¿ Ã°Ã®Ã§Â³Ã°Ã¢Ã Ã­Ã®." << endl;
             break;
         }
     }

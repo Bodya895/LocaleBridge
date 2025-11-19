@@ -110,7 +110,15 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
     if (bytesReceived > 0) {
         buf[bytesReceived] = '\0';
         string nameCandidate(buf);
+
         nameCandidate.erase(nameCandidate.find_last_not_of("\n\r\t") + 1);
+
+        if (nameCandidate.empty()) {
+            clientName = clientIP;
+        }
+        else {
+            clientName = nameCandidate;
+        }
 
         clientMutex.lock();
         clientNames[clientSocket] = nameCandidate;

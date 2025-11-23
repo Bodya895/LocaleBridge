@@ -1,4 +1,2 @@
-﻿  server_test.cpp
-  LINK : C:\Users\User\Desktop\LocaleBridge-main\Server\x64\Debug\Server.exe not found or not built by the last incremental link; performing full link
-server_test.obj : error LNK2005: main already defined in Server.obj
-C:\Users\User\Desktop\LocaleBridge-main\Server\x64\Debug\Server.exe : fatal error LNK1169: one or more multiply defined symbols found
+﻿  Server.cpp
+  Server.vcxproj -> C:\Users\User\Desktop\LocaleBridge-main\Server\x64\Debug\Server.exe

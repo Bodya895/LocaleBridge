@@ -8,6 +8,7 @@
 #include<mutex>
 #include<string>
 #include<map>
+#include<thread>
 
 #pragma comment(lib, "ws2_32.lib")
 
@@ -17,7 +18,7 @@ vector<SOCKET> clientSockets;
 map<SOCKET, string> clientNames;
 mutex clientMutex;
 
-DWORD WINAPI ClientHandler(LPVOID lpParam);
+void ClientHandler(SOCKET clientSocket);
 
 int main()
 {
@@ -73,12 +74,10 @@ int main()
         clientMutex.lock();
         clientSockets.push_back(clientSocket);
         clientMutex.unlock();
-
-        HANDLE thread = CreateThread(NULL, 0, ClientHandler, (LPVOID)clientSocket, 0, NULL);
-
-        if (thread != NULL) {
-            CloseHandle(thread);
-        }
+           
+        thread clientThread(ClientHandler, clientSocket);
+        clientThread.detach();
+        
     }
 
     const int cleanupResult = WSACleanup();
@@ -89,23 +88,23 @@ int main()
     return 0;
 }
 
-DWORD WINAPI ClientHandler(LPVOID lpParam) {
-    SOCKET clientSocket = (SOCKET)lpParam;
+void ClientHandler(SOCKET clientSocket) {
     char buf[4096];
     int bytesReceived;
     string clientIP;
     sockaddr_in client_addr;
     int client_addr_size = sizeof(client_addr);
+    string clientName;
 
     if (getpeername(clientSocket, (sockaddr*)&client_addr, &client_addr_size) == 0) {
         clientIP = inet_ntoa(client_addr.sin_addr);
     }
     else {
-        clientIP = "Невідомий клієнт";
+        clientIP = "Невідома IP-адреса";
     }
+    cout << "Новий клієнт '" << clientIP << "' підключився. Очікування імені..." << endl;
 
     bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
-    string clientName;
 
     if (bytesReceived > 0) {
         buf[bytesReceived] = '\0';
@@ -121,11 +120,11 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
         }
 
         clientMutex.lock();
-        clientNames[clientSocket] = nameCandidate;
+        clientNames[clientSocket] = clientName;
         clientName = nameCandidate;
         clientMutex.unlock();
 
-        cout << "'" << clientIP << "' Клієнта підключено як '" << clientName << "'." << endl;
+        cout << "'" << clientIP << "' зареєстрований як '" << clientName << "'." << endl;
     }
     else {
         clientMutex.lock();
@@ -133,7 +132,7 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
         clientMutex.unlock();
         closesocket(clientSocket);
         cout << "'" << clientIP << "' Клієнт відключився до надсилання імені." << endl;
-        return 0;
+        return;
     }
 
     while (true) {
@@ -174,6 +173,4 @@ DWORD WINAPI ClientHandler(LPVOID lpParam) {
     closesocket(clientSocket);
 
     cout << "'" << clientName << "' Клієнт відключився. З'єднання закрито." << endl;
-
-    return 0;
 }

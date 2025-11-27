@@ -104,6 +104,8 @@ void ClientHandler(SOCKET clientSocket) {
     }
     cout << "Новий клієнт '" << clientIP << "' підключився. Очікування імені..." << endl;
 
+    fflush(stdout);
+
     bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
 
     if (bytesReceived > 0) {

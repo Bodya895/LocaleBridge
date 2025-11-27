@@ -21,20 +21,20 @@ DWORD WINAPI ReceiveHandler(LPVOID lpParam) {
     while (true) {
         bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
 
-        
+
         if (bytesReceived <= 0) {
-            cout << "!!! Сервер відключився. Натисніть Enter для виходу..." << endl;
+            cout << "Connection lost." << endl;
             closesocket(clientSocket);
             break;
         }
 
-       
+
         buf[bytesReceived] = '\0';
 
-       
+
         cout << "\r" << buf << endl;
 
-       
+
     }
     return 0;
 }
@@ -42,7 +42,7 @@ DWORD WINAPI ReceiveHandler(LPVOID lpParam) {
 
 int main()
 {
-   
+
     SetConsoleCP(1251);
     SetConsoleOutputCP(1251);
 
@@ -64,8 +64,8 @@ int main()
 
     sockaddr_in clientHint{};
     clientHint.sin_family = AF_INET;
-    clientHint.sin_port = htons(5000); 
-    inet_pton(AF_INET, "127.0.0.1", &clientHint.sin_addr);
+    clientHint.sin_port = htons(5000);
+    inet_pton(AF_INET, "10.112.75.236", &clientHint.sin_addr);
 
     startupResult = connect(clientSocket, (sockaddr*)&clientHint, sizeof(clientHint));
     if (startupResult == SOCKET_ERROR) {
@@ -76,42 +76,42 @@ int main()
     }
     cout << "Succsesful connected to server!" << endl;
 
-	string name;
-	cout << "Enter your name: ";
+    string name;
+    cout << "Enter your name: ";
     cin >> name;
     int sendName = send(clientSocket, name.c_str(), (int)name.size(), 0);
     if (sendName == SOCKET_ERROR) {
         cout << "Error.Conection failed." << endl;
     }
-  
+
     HANDLE thread = CreateThread(NULL, 0, ReceiveHandler, (LPVOID)clientSocket, 0, NULL);
     if (thread != NULL) {
         CloseHandle(thread);
     }
-   
+
 
     string line;
     cout << "Enter your message: " << endl;
 
     while (getline(cin, line)) {
         if (line.empty()) {
-            
+
             continue;
         }
 
-       
+
         string message = line;
 
         int sendResult = send(clientSocket, message.c_str(), (int)message.size(), 0);
 
-        
+
         if (sendResult == SOCKET_ERROR) {
             cout << "Error.Conection failed." << endl;
             break;
         }
     }
 
-   
+
     closesocket(clientSocket);
     WSACleanup();
 

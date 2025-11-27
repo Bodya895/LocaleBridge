@@ -6,38 +6,13 @@
 #include <ws2tcpip.h>
 #include <string>
 #include <windows.h> 
+#include <thread>
 
 #pragma comment(lib, "ws2_32.lib")
 
 using namespace std;
 
-
-DWORD WINAPI ReceiveHandler(LPVOID lpParam) {
-    SOCKET clientSocket = (SOCKET)lpParam;
-    char buf[4096];
-    int bytesReceived;
-
-
-    while (true) {
-        bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
-
-
-        if (bytesReceived <= 0) {
-            cout << "Connection lost." << endl;
-            closesocket(clientSocket);
-            break;
-        }
-
-
-        buf[bytesReceived] = '\0';
-
-
-        cout << "\r" << buf << endl;
-
-
-    }
-    return 0;
-}
+void ReceiveHandler(SOCKET clientSocket);
 
 
 int main()
@@ -84,10 +59,9 @@ int main()
         cout << "Error.Conection failed." << endl;
     }
 
-    HANDLE thread = CreateThread(NULL, 0, ReceiveHandler, (LPVOID)clientSocket, 0, NULL);
-    if (thread != NULL) {
-        CloseHandle(thread);
-    }
+
+    thread receiveThread(ReceiveHandler, clientSocket);
+    receiveThread.detach();
 
 
     string line;
@@ -111,9 +85,25 @@ int main()
         }
     }
 
-
     closesocket(clientSocket);
     WSACleanup();
 
     return 0;
+}
+void ReceiveHandler(SOCKET clientSocket) {
+    char buf[4096];
+    int bytesReceived;
+
+    while (true) {
+        bytesReceived = recv(clientSocket, buf, sizeof(buf) - 1, 0);
+
+        if (bytesReceived <= 0) {
+            cout << "Connection lost." << endl;
+            closesocket(clientSocket);
+            break;
+        }
+
+        buf[bytesReceived] = '\0';
+        cout << "\r" << buf << endl;
+    }
 }
